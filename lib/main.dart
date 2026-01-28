@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main(){
-  runApp(const FocusQuest());
+  //ProviderScope abilitates Riverpod everywhere
+  runApp(
+    const ProviderScope(
+      child: FocusQuest(),
+    ),
+  );
 }
 
 class FocusQuest extends StatelessWidget{
