@@ -1,6 +1,6 @@
-# focus_quest
+# FocusQuest
 
-A new Flutter project.
+Gamification App for Studying
 
 ## Getting Started
 
