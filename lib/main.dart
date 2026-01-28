@@ -12,7 +12,7 @@ void main(){
 }
 
 class FocusQuest extends StatelessWidget{
-  const FocusQuest({super.key})
+  const FocusQuest({super.key});
 
   @override
   Widget build(BuildContext context){
@@ -30,7 +30,7 @@ class FocusQuest extends StatelessWidget{
 
 //Home page (ConsumerWidget can read Riverpod data)
 class HomePage extends ConsumerWidget{
-  const HomePage({super.key})
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref){
