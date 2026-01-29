@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/user_provider.dart';
-
+import 'services/location_service.dart';
 void main(){
   //ProviderScope abilitates Riverpod everywhere
   runApp(
@@ -75,6 +75,27 @@ class HomePage extends ConsumerWidget{
               ),
               const SizedBox(height: 10),
               Text('${user.currentXp} / ${user.xpToNextLevel} XP'),
+
+              const SizedBox(height: 30),
+
+              ElevatedButton(
+                onPressed: () async {
+                  final isAtUni = await LocationService().isAtUniversity();
+
+                  //security to avoid errors by closing the app during calculation
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isAtUni 
+                        ? "Sei in Università! XP guadagnati!"
+                        : "Non sei in Università. Posizione attuale non valida."),
+                      backgroundColor: isAtUni ? Colors.green : Colors.red,
+                    ),
+                  );
+                },
+                child: const Text("Test GPS: Verifica Posizione"),
+              ),
             ],
           ),
         ),
