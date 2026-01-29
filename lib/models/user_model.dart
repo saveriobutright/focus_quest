@@ -20,4 +20,17 @@ class UserModel {
       currentXp: map['current_xp'],
     );
   }
+
+  //copy changing only some attributes
+  UserModel copyWith({
+    String? name,
+    int? level,
+    int? currentXp,
+  }) {
+    return UserModel(
+      name: name ?? this.name, 
+      level: level ?? this.level, 
+      currentXp: currentXp ?? this.currentXp,
+    );
+  }
 }

@@ -68,6 +68,10 @@ class HomePage extends ConsumerWidget{
                   //security to avoid errors by closing the app during calculation
                   if (!context.mounted) return;
 
+                  if (isAtUni && context.mounted){
+                    ref.read(userProvider.notifier).addXp(10);
+                  }
+
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 class LocationService {
   //University Coordinates
   static const double targetLat = 39.3660;
-  static const double targetLon = 16.2252;
+  static const double targetLon = 16.2251;
   static const double radiusInMeters = 300;
 
   //Check if the student is at the right place
