@@ -1,5 +1,4 @@
 import 'package:geolocator/geolocator.dart';
-import 'dart:math';
 
 class LocationService {
   //University Coordinates
