@@ -95,43 +95,74 @@ class HomePage extends ConsumerWidget{
                   //if facedown activate bonus
                   final isRitualActive = snapshot.data ?? false;
 
-                  return Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isRitualActive ? Colors.amber.withValues(alpha: 0.2) : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isRitualActive ? Colors.amber : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children:[
-                        Icon(
-                          isRitualActive ? Icons.check_circle : Icons.do_not_disturb_on,
-                          color: isRitualActive ? Colors.amber[800] : Colors.grey,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          isRitualActive ? "Rituale di Studio Attivo" : "Gira il telefono per il Bonus",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isRitualActive ? Colors.amber[900] : Colors.grey[600],
+                  //tell provider if the phone is upside-down
+                  Future.microtask(() =>
+                    ref.read(userProvider.notifier).updateStatus(true, isRitualActive)
+                  );
+
+                  return Column(
+                    children:[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isRitualActive ? Colors.amber.withValues(alpha: 0.2) : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isRitualActive ? Colors.amber : Colors.transparent,
+                            width: 2,
                           ),
                         ),
-                      ],
-                    ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children:[
+                            Icon(
+                              isRitualActive ? Icons.check_circle : Icons.do_not_disturb_on,
+                              color: isRitualActive ? Colors.amber[800] : Colors.grey,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              isRitualActive ? "Rituale di Studio Attivo" : "Gira il telefono per il Bonus",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isRitualActive ? Colors.amber[900] : Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      //button to manage automatic studysession
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          //check gps one time at start
+                          final atUni = await LocationService().isAtUniversity();
+
+                          if (atUni) {
+                            ref.read(userProvider.notifier).startAutoXp(atUni, isRitualActive);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Sessione avviata: riceverai XP ogni 10 secondi!")),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Devi essere in Università per iniziare!")),
+                            );
+                          }
+                        },
+                        icon : const Icon(Icons.play_arrow),
+                        label: const Text("Inizia Sessione di Studio"),
+                      ),
+                    ],
                   );
                 },
               ),
             ],
           ),
         ),
+            
         //error
         error: (err, stack) => Center(child: Text('Errore: $err')),
-
-
         //loading
         loading: () => const Center(child: CircularProgressIndicator()),
       ),

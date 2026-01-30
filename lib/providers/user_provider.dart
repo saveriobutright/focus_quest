@@ -1,9 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../services/database_helper.dart';
+import 'dart:async';
 
 //Notifier that handles the logic
 class UserNotifier extends AsyncNotifier<UserModel>{
+
+  Timer? _studyTimer;
+
+  bool _currentAtUni = false;
+  bool _currentFaceDown = false;
 
   @override
   Future<UserModel> build() async {
@@ -16,6 +22,33 @@ class UserNotifier extends AsyncNotifier<UserModel>{
     } else {
       return UserModel(name: "Studente", level: 1, currentXp: 0);
     }
+  }
+
+  void updateStatus(bool atUni, bool faceDown){
+    _currentAtUni = atUni;
+    _currentFaceDown = faceDown;
+  }
+
+  //XP every x seconds
+  void startAutoXp(bool isAtUni, bool isFaceDown){
+    //starting values
+    _currentAtUni = isAtUni;
+    _currentFaceDown = isFaceDown;
+    
+    //stop existing timers
+    _studyTimer?.cancel();
+
+    //every 10 secs check and prize
+    _studyTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (_currentAtUni) {
+        int xpDati = _currentFaceDown ? 25 : 10;
+        addXp(xpDati);
+      }
+    });
+  }
+
+  void stopAutoXp(){
+    _studyTimer?.cancel();
   }
 
   //XP
