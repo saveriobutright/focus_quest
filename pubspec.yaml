@@ -45,6 +45,9 @@ dependencies:
   #Coordinates
   geolocator: ^14.0.2
 
+  #Sensors
+  sensors_plus: ^6.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
