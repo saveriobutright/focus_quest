@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_provider.dart';
 import '../services/location_service.dart';
+import '../services/sensor_service.dart';
 
 //Home page (ConsumerWidget can read Riverpod data)
 class HomePage extends ConsumerWidget{
@@ -83,6 +84,46 @@ class HomePage extends ConsumerWidget{
                   );
                 },
                 child: const Text("Test GPS: Verifica Posizione"),
+              ),
+
+              const SizedBox(height: 20),
+
+              //Listen to sensors
+              StreamBuilder<bool>(
+                stream: SensorService().faceDownStream,
+                builder:(context, snapshot) {
+                  //if facedown activate bonus
+                  final isRitualActive = snapshot.data ?? false;
+
+                  return Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isRitualActive ? Colors.amber.withValues(alpha: 0.2) : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isRitualActive ? Colors.amber : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children:[
+                        Icon(
+                          isRitualActive ? Icons.check_circle : Icons.do_not_disturb_on,
+                          color: isRitualActive ? Colors.amber[800] : Colors.grey,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          isRitualActive ? "Rituale di Studio Attivo" : "Gira il telefono per il Bonus",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isRitualActive ? Colors.amber[900] : Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
