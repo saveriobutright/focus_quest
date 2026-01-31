@@ -34,7 +34,9 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         level INTEGER,
-        current_xp INTEGER
+        current_xp INTEGER,
+        goalLevel5Reached INTEGER DEFAULT 0,
+        goalRitualUsed INTEGER DEFAULT 0
       )
     ''');
 
@@ -43,6 +45,8 @@ class DatabaseHelper {
       'name': 'Eroe dello Studio',
       'level': 1,
       'current_xp': 0,
+      'goalLevel5Reached': 0,
+      'goalRitualUsed': 0,
     });
   }
 
@@ -72,6 +76,19 @@ class DatabaseHelper {
       },
       where: 'id = ?',
       whereArgs: [1], //always update user with ID = 1
+    );
+  }
+
+  Future<int> updateGoalStatus(String goalColumn, bool isReached) async {
+    final db = await instance.database;
+
+    return await db.update(
+      'user',
+      {
+        goalColumn: isReached ? 1 : 0,
+      },
+      where: 'id = ?',
+      whereArgs: [1],
     );
   }
 }

@@ -47,6 +47,28 @@ class UserNotifier extends AsyncNotifier<UserModel>{
     });
   }
 
+  void completeGoal(String goalType) async {
+    final currentUser = state.value;
+    if(currentUser == null) return;
+
+    if(goalType == 'level5' && currentUser.level >= 5 && !currentUser.goalLevel5Reached){
+      //update object
+      state = AsyncData(currentUser.copyWith(goalLevel5Reached: true));
+
+      //save achievement to db
+      await DatabaseHelper.instance.updateGoalStatus('goalLevel5Reached', true);
+
+      //xp prize
+      addXp(100);
+    }
+
+    else if(goalType == 'ritual' && !currentUser.goalRitualUsed){
+      state = AsyncData(currentUser.copyWith(goalRitualUsed: true));
+      await DatabaseHelper.instance.updateGoalStatus('goalRitualUsed', true);
+      await addXp(50);
+    }
+  }
+
   void stopAutoXp(){
     _studyTimer?.cancel();
   }
