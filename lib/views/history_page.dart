@@ -11,66 +11,69 @@ class HistoryPage extends ConsumerWidget{
     final userAsync = ref.watch(userProvider);
 
     return Scaffold(
+      backgroundColor: Colors.grey[100], // Sfondo leggermente grigio per far risaltare le card
       body: userAsync.when(
         data: (user) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
             const Text(
-              "Riepilogo Studio",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              "Registro delle Imprese",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
             ),
             const SizedBox(height: 20),
-
-            //progress card
-            Card(
-              elevation: 4,
-              child: ListTile(
-                leading: const Icon(Icons.stars, color: Colors.amber, size: 40),
-                title: Text("Livello Attuale: ${user.level}"),
-                subtitle: Text("Hai accumulato ${user.currentXp} XP in questa sessione"),
-              ),
+            
+            _buildAchievementCard(
+              title: "Raggiungi il livello 5",
+              reward: "100 XP",
+              isCompleted: user.goalLevel5Reached,
+              canClaim: user.level >= 5 && !user.goalLevel5Reached,
+              onClaim: () => ref.read(userProvider.notifier).completeGoal('level5'),
+              icon: Icons.military_tech,
             ),
-
-            const SizedBox(height: 20),
-            const Text(
-              "Suggerimenti per te",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 10),
-
-            //achievements
-            ListTile(
-              leading: Icon(
-                user.goalLevel5Reached ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: user.goalLevel5Reached ? Colors.green : Colors.grey,
-              ),
-              title: const Text("Raggiungi il livello 5"),
-              subtitle: const Text("Premio: 100 XP"),
-              //button appears only if level 5 is unredeemed
-              trailing: (user.level >= 5 && !user.goalLevel5Reached)
-                ? ElevatedButton(
-                    onPressed: () => ref.read(userProvider.notifier).completeGoal('level5'),
-                    child: const Text("Riscuoti"),
-                  )
-                : null,
-            ),
-
-
-            ListTile(
-              leading: Icon(
-                user.goalRitualUsed ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: user.goalRitualUsed ? Colors.green : Colors.grey,
-              ),
-              title: const Text("Usa il Rituale di Studio"),
-              subtitle: const Text("Premio: 50 XP"),
-              trailing:  (user.goalRitualUsed == false)
-                ? null
-                : null,
+            
+            _buildAchievementCard(
+              title: "Il Primo Rituale",
+              reward: "50 XP",
+              isCompleted: user.goalRitualUsed,
+              canClaim: false, // Per ora lasciamo la logica esistente
+              onClaim: () {},
+              icon: Icons.auto_fix_high,
             ),
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Errore: $err')),
+      ),
+    );
+  }
+
+  Widget _buildAchievementCard({
+    required String title,
+    required String reward,
+    required bool isCompleted,
+    required bool canClaim,
+    required VoidCallback onClaim,
+    required IconData icon,
+  }) {
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(12),
+        leading: CircleAvatar(
+          backgroundColor: isCompleted ? Colors.green.shade100 : Colors.grey.shade200,
+          child: Icon(icon, color: isCompleted ? Colors.green : Colors.grey),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text("Ricompensa: $reward", style: TextStyle(color: Colors.amber.shade900, fontWeight: FontWeight.w600)),
+        trailing: canClaim 
+          ? ElevatedButton(
+              onPressed: onClaim,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+              child: const Text("RISCUOTI"),
+            )
+          : (isCompleted ? const Icon(Icons.check_circle, color: Colors.green) : null),
       ),
     );
   }

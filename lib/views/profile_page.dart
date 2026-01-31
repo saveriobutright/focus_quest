@@ -16,71 +16,122 @@ class ProfilePage extends ConsumerWidget{
     final TextEditingController nameController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Il Mio Profilo")),
+      appBar: AppBar(
+        title: const Text("Profilo Eroe"),
+        centerTitle: true,
+      ),
       body: userAsync.when(
         data: (user) {
+          //initialize controller text only if not already writing
           nameController.text = user.name;
-          return ListView(
+          
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
-            children: [
-              //Lvl and avatar
-              Center(
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      child: Icon(_getIconData(user.avatar), size: 50),
+            child: Column(
+              children: [
+                //Profile header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(25),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.indigo.shade700, Colors.purple.shade600],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 10),
-                    Text(user.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    Text("Livello ${user.level}", style: const TextStyle(color: Colors.grey)),
-                  ],
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5))
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.white24,
+                        child: Icon(_getIconData(user.avatar), size: 50, color: Colors.white),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        user.name,
+                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Studente di Livello ${user.level}",
+                        style: TextStyle(color: Colors.amber.shade300, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(height: 40),
+                
+                const SizedBox(height: 30),
 
-              //Avatar change
-              const Text("Scegli Avatar", style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: ['person', 'school', 'auto_stories', 'emoji_events'].map((iconName) {
-                  return GestureDetector(
-                    onTap: () => ref.read(userProvider.notifier).updateAvatar(iconName),
-                    child: CircleAvatar(
-                      backgroundColor: user.avatar == iconName ? Colors.deepPurple : Colors.grey[200],
-                      child: Icon(_getIconData(iconName), color: user.avatar == iconName ? Colors.white : Colors.black),
-                    ),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 30),
-
-              //Name edit 
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: "Nome Utente",
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.edit),
+                //Avatar 
+                const Text("Cambia la tua Icona", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: ['person', 'school', 'auto_stories', 'emoji_events'].map((iconName) {
+                    final isSelected = user.avatar == iconName;
+                    return GestureDetector(
+                      onTap: () => ref.read(userProvider.notifier).updateAvatar(iconName),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.deepPurple.withOpacity(0.1) : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: isSelected ? Colors.deepPurple : Colors.transparent, width: 2),
+                        ),
+                        child: Icon(
+                          _getIconData(iconName), 
+                          size: 30, 
+                          color: isSelected ? Colors.deepPurple : Colors.grey
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-                onSubmitted: (value) => ref.read(userProvider.notifier).updateName(value),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
-              //Theme switch
-              SwitchListTile(
-                title: const Text("Tema Scuro"),
-                value: isDarkMode,
-                onChanged: (val) => ref.read(themeProvider.notifier).state = val,
-              ),
-            ],
+                //Name editing
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: "Nome dell'Eroe",
+                    prefixIcon: const Icon(Icons.edit_note),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                    filled: true,
+                    fillColor: Colors.grey.withOpacity(0.05),
+                  ),
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty) {
+                      ref.read(userProvider.notifier).updateName(value.trim());
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 20),
+                const Divider(),
+
+                //Theme settings
+                SwitchListTile(
+                  title: const Text("Modalità Oscura"),
+                  subtitle: const Text("Ideale per le sessioni di studio notturne"),
+                  secondary: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, color: Colors.amber),
+                  value: isDarkMode,
+                  onChanged: (val) {
+                    //Update theme state
+                    ref.read(themeProvider.notifier).state = val;
+                  },
+                ),
+              ],
+            ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text(e.toString())),
+        error: (err, stack) => Center(child: Text('Errore: $err')),
       ),
     );
   }
