@@ -104,20 +104,14 @@ class DashboardView extends ConsumerWidget{
               onPressed: () async {
                 final isAtUni = await LocationService().isAtUniversity();
 
-
                 //security to avoid errors by closing the app during calculation
                 if (!context.mounted) return;
-
-                if (isAtUni && context.mounted){
-                  ref.read(userProvider.notifier).addXp(10);
-                }
-
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(isAtUni 
-                      ? "Sei in Università! XP guadagnati!"
-                      : "Non sei in Università. Posizione attuale non valida."),
+                      ? "Sei in Università! Puoi iniziare a studiare!"
+                      : "Non sei in Università. Spostati per guadagnare XP."),
                     backgroundColor: isAtUni ? Colors.green : Colors.red,
                   ),
                 );
