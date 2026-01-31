@@ -4,6 +4,7 @@ class UserModel {
   final int currentXp;
   final bool goalLevel5Reached;
   final bool goalRitualUsed;
+  final String avatar;
 
   UserModel({
     required this.name,
@@ -11,6 +12,7 @@ class UserModel {
     required this.currentXp,
     this.goalLevel5Reached = false,
     this.goalRitualUsed = false,
+    this.avatar = 'person',
   });
 
   //Missing XP to get to the next level
@@ -24,6 +26,7 @@ class UserModel {
       currentXp: map['current_xp'],
       goalLevel5Reached: map['goalLevel5Reached'] == 1,
       goalRitualUsed: map['goalRitualUser'] == 1,
+      avatar: map['avatar'],
     );
   }
 
@@ -35,6 +38,7 @@ class UserModel {
       'current_xp' : currentXp,
       'goalLevel5Reached' : goalLevel5Reached ? 1 : 0,
       'goalRitualUsed' : goalRitualUsed ? 1 : 0,
+      'avatar' : avatar,
     };
   }
 
@@ -45,6 +49,7 @@ class UserModel {
     int? currentXp,
     bool? goalLevel5Reached,
     bool? goalRitualUsed,
+    String? avatar,
   }) {
     return UserModel(
       name: name ?? this.name, 
@@ -52,6 +57,7 @@ class UserModel {
       currentXp: currentXp ?? this.currentXp,
       goalLevel5Reached: goalLevel5Reached ?? this.goalLevel5Reached,
       goalRitualUsed: goalRitualUsed ?? this.goalRitualUsed,
+      avatar: avatar ?? this.avatar,
     );
   }
 }

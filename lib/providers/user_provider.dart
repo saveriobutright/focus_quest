@@ -31,6 +31,26 @@ class UserNotifier extends AsyncNotifier<UserModel>{
     _currentFaceDown = faceDown;
   }
 
+  Future<void> updateName(String newName) async {
+    final currentUser = state.value;
+    if(currentUser == null) return;
+
+    state = AsyncData(currentUser.copyWith(name: newName));
+
+    final db = await DatabaseHelper.instance.database;
+    await db.update('user', {'name': newName}, where: 'id = ?', whereArgs: [1]);
+  }
+
+  Future<void> updateAvatar(String avatarName) async {
+    final currentUser = state.value;
+    if(currentUser == null) return;
+
+    state = AsyncData(currentUser.copyWith(avatar: avatarName));
+
+    final db = await DatabaseHelper.instance.database;
+    await db.update('user', {'avatar': avatarName}, where: 'id = ?', whereArgs: [1]);
+  }
+
   //XP every x seconds
   void startAutoXp(bool isAtUni, bool isFaceDown){
     //starting values

@@ -36,7 +36,8 @@ class DatabaseHelper {
         level INTEGER,
         current_xp INTEGER,
         goalLevel5Reached INTEGER DEFAULT 0,
-        goalRitualUsed INTEGER DEFAULT 0
+        goalRitualUsed INTEGER DEFAULT 0,
+        avatar TEXT DEFAULT 'person'
       )
     ''');
 
@@ -47,6 +48,7 @@ class DatabaseHelper {
       'current_xp': 0,
       'goalLevel5Reached': 0,
       'goalRitualUsed': 0,
+      'avatar': 'person',
     });
   }
 
