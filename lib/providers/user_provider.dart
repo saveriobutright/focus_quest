@@ -10,6 +10,8 @@ class UserNotifier extends AsyncNotifier<UserModel>{
 
   bool _currentAtUni = false;
   bool _currentFaceDown = false;
+  bool _isSessionActive = false;
+  bool get isSessionActive => _isSessionActive;
 
   @override
   Future<UserModel> build() async {
@@ -37,6 +39,7 @@ class UserNotifier extends AsyncNotifier<UserModel>{
     
     //stop existing timers
     _studyTimer?.cancel();
+    _isSessionActive = true;
 
     //every 10 secs check and prize
     _studyTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -45,6 +48,9 @@ class UserNotifier extends AsyncNotifier<UserModel>{
         addXp(xpDati);
       }
     });
+
+    //notify interface with state change
+    state = AsyncData(state.value!);
   }
 
   void completeGoal(String goalType) async {
@@ -71,6 +77,8 @@ class UserNotifier extends AsyncNotifier<UserModel>{
 
   void stopAutoXp(){
     _studyTimer?.cancel();
+    _isSessionActive = false;
+    state = AsyncData(state.value!);
   }
 
   //XP

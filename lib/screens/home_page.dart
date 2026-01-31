@@ -61,6 +61,7 @@ class DashboardView extends ConsumerWidget{
 
     //ref listens to the provider
     final userAsync = ref.watch(userProvider);
+    final isSessionActive = ref.watch(userProvider.notifier).isSessionActive;
 
       //future provider can be: data ready, error, loading
     return userAsync.when(
@@ -82,7 +83,7 @@ class DashboardView extends ConsumerWidget{
             const SizedBox(height: 10),
 
 
-              //xp bar
+            //xp bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: LinearProgressIndicator(
@@ -104,7 +105,7 @@ class DashboardView extends ConsumerWidget{
                 final isAtUni = await LocationService().isAtUniversity();
 
 
-                  //security to avoid errors by closing the app during calculation
+                //security to avoid errors by closing the app during calculation
                 if (!context.mounted) return;
 
                 if (isAtUni && context.mounted){
@@ -126,7 +127,7 @@ class DashboardView extends ConsumerWidget{
 
             const SizedBox(height: 20),
 
-              //Listen to sensors
+            //Listen to sensors
             StreamBuilder<bool>(
               stream: SensorService().faceDownStream,
               builder:(context, snapshot) {
@@ -171,25 +172,35 @@ class DashboardView extends ConsumerWidget{
 
                     const SizedBox(height: 20),
 
-                      //button to manage automatic studysession
+                    //button to manage automatic studysession
                     ElevatedButton.icon(
                       onPressed: () async {
-                        //check gps one time at start
-                        final atUni = await LocationService().isAtUniversity();
+                        if(isSessionActive){
+                          ref.read(userProvider.notifier).stopAutoXp();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Sessione terminata!")),
+                          );
+                        }else{
+                          final atUni = await LocationService().isAtUniversity();
 
-                        if (atUni) {
-                          ref.read(userProvider.notifier).startAutoXp(atUni, isRitualActive);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Sessione avviata: riceverai XP ogni 10 secondi!")),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Devi essere in Università per iniziare!")),
-                          );
+                          if (atUni && context.mounted){
+                            ref.read(userProvider.notifier).startAutoXp(atUni, isRitualActive);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Sessione avviata!")),
+                            );
+                          } else if (context.mounted){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Devi essere in Università per iniziare!")),
+                            );
+                          }
                         }
                       },
-                      icon : const Icon(Icons.play_arrow),
-                      label: const Text("Inizia Sessione di Studio"),
+                      icon : Icon(isSessionActive ? Icons.stop : Icons.play_arrow),
+                      label: Text(isSessionActive ? "Termina Sessione di Studio" : "Inizia Sessione di Studio"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSessionActive ? Colors.red[100] : null,
+                        foregroundColor: isSessionActive ? Colors.red[900] : null,
+                      ),
                     ),
                   ],
                 );
