@@ -22,22 +22,25 @@ class HistoryPage extends ConsumerWidget{
             ),
             const SizedBox(height: 20),
             
-            _buildAchievementCard(
+            _animateTask(index: 0, child: 
+              _buildAchievementCard(
               title: "Raggiungi il livello 5",
               reward: "100 XP",
               isCompleted: user.goalLevel5Reached,
               canClaim: user.level >= 5 && !user.goalLevel5Reached,
               onClaim: () => ref.read(userProvider.notifier).completeGoal('level5'),
               icon: Icons.military_tech,
+              ),
             ),
             
-            _buildAchievementCard(
+            _animateTask(index: 1, child: _buildAchievementCard(
               title: "Il Primo Rituale",
               reward: "50 XP",
               isCompleted: user.goalRitualUsed,
               canClaim: false, // Per ora lasciamo la logica esistente
               onClaim: () {},
               icon: Icons.auto_fix_high,
+              ),
             ),
           ],
         ),
@@ -75,6 +78,24 @@ class HistoryPage extends ConsumerWidget{
             )
           : (isCompleted ? const Icon(Icons.check_circle, color: Colors.green) : null),
       ),
+    );
+  }
+
+  Widget _animateTask({required Widget child, required int index}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + (index * 150)), // Effetto cascata
+      curve: Curves.easeOutQuart,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1 - value)), // Scivola dal basso
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
