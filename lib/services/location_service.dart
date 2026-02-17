@@ -2,10 +2,10 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   //University Coordinates
-  //static const double targetLat = 39.3660;//uni
-  //static const double targetLon = 16.2251;//uni
-  static const double targetLat = 38.5964; //casa
-  static const double targetLon = 16.0549; //casa
+  static const double targetLat = 39.3660;//uni
+  static const double targetLon = 16.2251;//uni
+  //static const double targetLat = 38.5964; //casa
+  //static const double targetLon = 16.0549; //casa
   static const double radiusInMeters = 300;
 
   //Check if the student is at the right place
@@ -26,6 +26,7 @@ class LocationService {
 
     //Get current position
     Position position = await Geolocator.getCurrentPosition();
+    //better to use a Future rather than a continuous stream to save battery life
 
     //Distance between the student and the uni
     double distanceInMeters = Geolocator.distanceBetween(

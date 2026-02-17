@@ -184,6 +184,8 @@ class DashboardView extends ConsumerWidget {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Quest completata! XP salvati.")));
                     } else {
                       final atUni = await LocationService().isAtUniversity();
+                      //we check the location only at the press of the button
+                      //to save battery (go to services/location_service for further explanation)
                       if (atUni && context.mounted) {
                         ref.read(userProvider.notifier).startAutoXp(atUni, true);
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Quest iniziata! Buona fortuna, Eroe.")));
