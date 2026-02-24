@@ -36,7 +36,7 @@ class DashboardView extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   child: Row(
                     children: [
-                      // Animazione Rimbalzo Avatar al Level Up [cite: 2026-01-21]
+                      //Avatar Bounce Animation when Level Up
                       TweenAnimationBuilder<double>(
                         key: ValueKey(user.level),
                         tween: Tween(begin: 0.0, end: 1.0),
