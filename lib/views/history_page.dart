@@ -11,7 +11,7 @@ class HistoryPage extends ConsumerWidget{
     final userAsync = ref.watch(userProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Sfondo leggermente grigio per far risaltare le card
+      backgroundColor: Colors.grey[100], // Slightly grey background to make card pop
       body: userAsync.when(
         data: (user) => ListView(
           padding: const EdgeInsets.all(16),
@@ -37,7 +37,7 @@ class HistoryPage extends ConsumerWidget{
               title: "Il Primo Rituale",
               reward: "50 XP",
               isCompleted: user.goalRitualUsed,
-              canClaim: false, // Per ora lasciamo la logica esistente
+              canClaim: false,
               onClaim: () {},
               icon: Icons.auto_fix_high,
               ),
@@ -84,13 +84,13 @@ class HistoryPage extends ConsumerWidget{
   Widget _animateTask({required Widget child, required int index}) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 400 + (index * 150)), // Effetto cascata
+      duration: Duration(milliseconds: 400 + (index * 150)), //Waterfall effect
       curve: Curves.easeOutQuart,
       builder: (context, value, child) {
         return Opacity(
           opacity: value,
           child: Transform.translate(
-            offset: Offset(0, 30 * (1 - value)), // Scivola dal basso
+            offset: Offset(0, 30 * (1 - value)), //Slide from the bottom
             child: child,
           ),
         );
